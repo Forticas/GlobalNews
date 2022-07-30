@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Keyword index{% endblock %}
+
+{% block body %}
+    <h1>Keyword index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for keyword in keywords %}
+            <tr>
+                <td>{{ keyword.id }}</td>
+                <td>{{ keyword.name }}</td>
+                <td>{{ keyword.slug }}</td>
+                <td>
+                    <a href="{{ path('app_keyword_show', {'id': keyword.id}) }}">show</a>
+                    <a href="{{ path('app_keyword_edit', {'id': keyword.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_keyword_new') }}">Create new</a>
+{% endblock %}

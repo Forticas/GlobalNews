@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Gedmo\Mapping\Annotation as Gedmo;
 use App\Repository\KeywordRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,6 +20,12 @@ class Keyword
     private ?string $name = null;
 
     #[ORM\Column(length: 255, unique: true)]
+    #[Gedmo\Slug(
+        fields: ['name'],
+        updatable: false,
+        unique: true,
+        separator: '-',
+    )]
     private ?string $slug = null;
 
     #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'keywords')]
