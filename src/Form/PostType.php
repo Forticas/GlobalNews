@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Post;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -12,6 +13,16 @@ class PostType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('locale', ChoiceType::class, [
+                'choices'  => [
+                    'en' => 'en',
+                    'fr' => 'fr',
+                    'ar' => 'ar',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+            ])
+            ->add('mainPost')
             ->add('title')
             ->add('excerpt')
             ->add('content')

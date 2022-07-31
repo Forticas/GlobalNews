@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Gedmo\Mapping\Annotation as Gedmo;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,12 +20,6 @@ class Category
     private ?string $name = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Gedmo\Slug(
-        fields: ['name'],
-        updatable: false,
-        unique: true,
-        separator: '-',
-    )]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
@@ -35,6 +28,15 @@ class Category
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Post::class)]
     private Collection $posts;
 
+    #[ORM\Column(length: 255)]
+    private ?string $locale = 'en';
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'categories')]
+    private ?self $mainCategory = null;
+
+    #[ORM\OneToMany(mappedBy: 'mainCategory', targetEntity: self::class)]
+    private Collection $categories;
+
     public function __toString(): string
     {
         return $this->name;
@@ -42,6 +44,7 @@ class Category
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -109,6 +112,60 @@ class Category
             // set the owning side to null (unless already changed)
             if ($post->getCategory() === $this) {
                 $post->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale): self
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getMainCategory(): ?self
+    {
+        return $this->mainCategory;
+    }
+
+    public function setMainCategory(?self $mainCategory): self
+    {
+        $this->mainCategory = $mainCategory;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(self $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->setMainCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(self $category): self
+    {
+        if ($this->categories->removeElement($category)) {
+            // set the owning side to null (unless already changed)
+            if ($category->getMainCategory() === $this) {
+                $category->setMainCategory(null);
             }
         }
 

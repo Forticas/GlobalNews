@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Keyword;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -14,6 +15,16 @@ class KeywordType extends AbstractType
         $builder
             ->add('name')
             ->add('posts')
+            ->add('locale', ChoiceType::class, [
+                'choices'  => [
+                    'en' => 'en',
+                    'fr' => 'fr',
+                    'ar' => 'ar',
+                ],
+                'expanded' => true,
+                'multiple' => false,
+            ])
+            ->add('mainKeyword')
         ;
     }
 

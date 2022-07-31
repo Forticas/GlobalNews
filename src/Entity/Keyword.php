@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Gedmo\Mapping\Annotation as Gedmo;
+
 use App\Repository\KeywordRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -20,16 +20,19 @@ class Keyword
     private ?string $name = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Gedmo\Slug(
-        fields: ['name'],
-        updatable: false,
-        unique: true,
-        separator: '-',
-    )]
     private ?string $slug = null;
 
     #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'keywords')]
     private Collection $posts;
+
+    #[ORM\Column(length: 255)]
+    private ?string $locale = 'en';
+
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'keywords')]
+    private ?self $mainKeyword = null;
+
+    #[ORM\OneToMany(mappedBy: 'mainKeyword', targetEntity: self::class)]
+    private Collection $keywords;
 
     public function __toString(): string
     {
@@ -39,6 +42,7 @@ class Keyword
     public function __construct()
     {
         $this->posts = new ArrayCollection();
+        $this->keywords = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -92,6 +96,60 @@ class Keyword
     {
         if ($this->posts->removeElement($post)) {
             $post->removeKeyword($this);
+        }
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale): self
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getMainKeyword(): ?self
+    {
+        return $this->mainKeyword;
+    }
+
+    public function setMainKeyword(?self $mainKeyword): self
+    {
+        $this->mainKeyword = $mainKeyword;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getKeywords(): Collection
+    {
+        return $this->keywords;
+    }
+
+    public function addKeyword(self $keyword): self
+    {
+        if (!$this->keywords->contains($keyword)) {
+            $this->keywords->add($keyword);
+            $keyword->setMainKeyword($this);
+        }
+
+        return $this;
+    }
+
+    public function removeKeyword(self $keyword): self
+    {
+        if ($this->keywords->removeElement($keyword)) {
+            // set the owning side to null (unless already changed)
+            if ($keyword->getMainKeyword() === $this) {
+                $keyword->setMainKeyword(null);
+            }
         }
 
         return $this;

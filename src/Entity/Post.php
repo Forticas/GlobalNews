@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Gedmo\Mapping\Annotation as Gedmo;
+
 use App\Repository\PostRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +10,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: PostRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Post
 {
     #[ORM\Id]
@@ -21,29 +22,21 @@ class Post
     private ?string $title = null;
 
     #[ORM\Column(length: 255, unique: true)]
-    #[Gedmo\Slug(
-        fields: ['title'],
-        updatable: false,
-        unique: true,
-        separator: '-',
-    )]
     private ?string $slug = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $exerpt = null;
+    private ?string $excerpt = null;
 
     #[ORM\Column(type: Types::TEXT)]
     private ?string $content = null;
 
     #[ORM\Column]
-    #[Gedmo\Timestampable(on: 'create')]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $publishedAt = null;
 
     #[ORM\Column(nullable: true)]
-    #[Gedmo\Timestampable(on: 'update')]
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\ManyToOne(inversedBy: 'keywords')]
@@ -59,10 +52,25 @@ class Post
     #[ORM\OneToMany(mappedBy: 'post', targetEntity: Comment::class, orphanRemoval: true)]
     private Collection $comments;
 
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'posts')]
+    private ?self $mainPost = null;
+
+    #[ORM\OneToMany(mappedBy: 'mainPost', targetEntity: self::class)]
+    private Collection $posts;
+
+    #[ORM\Column(length: 255)]
+    private ?string $locale = 'en';
+
+    public function __toString(): string
+    {
+        return $this->title;
+    }
+
     public function __construct()
     {
         $this->keywords = new ArrayCollection();
         $this->comments = new ArrayCollection();
+        $this->posts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -94,14 +102,14 @@ class Post
         return $this;
     }
 
-    public function getExerpt(): ?string
+    public function getExcerpt(): ?string
     {
-        return $this->exerpt;
+        return $this->excerpt;
     }
 
-    public function setExerpt(?string $exerpt): self
+    public function setExcerpt(?string $excerpt): self
     {
-        $this->exerpt = $exerpt;
+        $this->excerpt = $excerpt;
 
         return $this;
     }
@@ -123,9 +131,10 @@ class Post
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeImmutable $createdAt): self
+    #[ORM\PrePersist]
+    public function setCreatedAt(): self
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt = new \DateTimeImmutable();
 
         return $this;
     }
@@ -147,9 +156,10 @@ class Post
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): self
+    #[ORM\PreUpdate]
+    public function setUpdatedAt(): self
     {
-        $this->updatedAt = $updatedAt;
+        $this->updatedAt = new \DateTimeImmutable();
 
         return $this;
     }
@@ -228,6 +238,60 @@ class Post
                 $comment->setPost(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMainPost(): ?self
+    {
+        return $this->mainPost;
+    }
+
+    public function setMainPost(?self $mainPost): self
+    {
+        $this->mainPost = $mainPost;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, self>
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(self $post): self
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts->add($post);
+            $post->setMainPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(self $post): self
+    {
+        if ($this->posts->removeElement($post)) {
+            // set the owning side to null (unless already changed)
+            if ($post->getMainPost() === $this) {
+                $post->setMainPost(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        return $this->locale;
+    }
+
+    public function setLocale(string $locale): self
+    {
+        $this->locale = $locale;
 
         return $this;
     }

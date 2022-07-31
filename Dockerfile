@@ -17,7 +17,8 @@ RUN apk add --no-cache \
 		file \
 		gettext \
 		git \
-	;
+    	npm \
+    ;
 
 ARG APCU_VERSION=5.1.21
 RUN set -eux; \
