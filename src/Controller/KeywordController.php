@@ -9,15 +9,38 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 #[Route('/dashboard/keyword')]
 class KeywordController extends AbstractController
 {
-    #[Route('/', name: 'app_keyword_index', methods: ['GET'])]
-    public function index(KeywordRepository $keywordRepository): Response
+    public function __construct(
+        private CacheInterface $cache
+    )
     {
+    }
+
+    /**
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    #[Route('/', name: 'app_keyword_index', methods: ['GET'])]
+    public function index(KeywordRepository $keywordRepository, Request $request): Response
+    {
+        $page = $request->query->getInt('page', 1);
+        $keywords = $this->cache->get('keywords-'.$page, function (ItemInterface $item) use ($keywordRepository, $page) {
+            $item->expiresAfter(3600);
+            return $keywordRepository->findBy([], [], 10, ($page-1)*10);
+        });
+
+        //get page number with 10 keywords per page
+        $pages = $this->cache->get('keyword_page_number', function (ItemInterface $item) use ($keywordRepository) {
+            $item->expiresAfter(3600);
+            return $keywordRepository->count([]) / 10;
+        });
         return $this->render('keyword/index.html.twig', [
-            'keywords' => $keywordRepository->findAll(),
+            'keywords' => $keywords,
+            'pages' => $pages,
         ]);
     }
 

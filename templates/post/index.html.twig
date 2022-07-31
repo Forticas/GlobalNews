@@ -1,10 +1,17 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Post index{% endblock %}
-
+{% if app.request.get('page') %}
+    {% set current_page = app.request.get('page') %}
+{% else %}
+    {% set current_page = 1 %}
+{% endif %}
 {% block body %}
     <h1>Post index</h1>
-
+<div
+    {{ stimulus_controller('symfony/ux-swup/swup') }}
+    id="swup"
+>
     <table class="table">
         <thead>
             <tr>
@@ -42,6 +49,23 @@
         {% endfor %}
         </tbody>
     </table>
-
+    {% if pages > 1 %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('app_post_index')~'?page='~(current_page-1) }}">Previous</a>
+                </li>
+                {% for i in 1..pages %}
+                    <li class="page-item{% if i == current_page %} active{% endif %}">
+                        <a class="page-link" href="{{ path('app_post_index')~'?page='~i }}">{{ i }}</a>
+                    </li>
+                {% endfor %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('app_post_index')~'?page='~(current_page+1) }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+</div>
     <a href="{{ path('app_post_new') }}">Create new</a>
 {% endblock %}

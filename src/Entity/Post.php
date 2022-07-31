@@ -39,7 +39,7 @@ class Post
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    #[ORM\ManyToOne(inversedBy: 'keywords')]
+    #[ORM\ManyToOne(inversedBy: 'posts')]
     private ?Author $author = null;
 
     #[ORM\ManyToMany(targetEntity: Keyword::class, inversedBy: 'posts')]

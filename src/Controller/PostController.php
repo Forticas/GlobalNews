@@ -9,15 +9,34 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 #[Route('/dashboard/post')]
 class PostController extends AbstractController
 {
-    #[Route('/', name: 'app_post_index', methods: ['GET'])]
-    public function index(PostRepository $postRepository): Response
+    public function __construct(
+        private CacheInterface $cache
+    )
     {
+    }
+    #[Route('/', name: 'app_post_index', methods: ['GET'])]
+    public function index(PostRepository $postRepository, Request $request): Response
+    {
+        $page = $request->query->getInt('page', 1);
+        $posts = $this->cache->get('posts-'.$page, function (ItemInterface $item) use ($postRepository, $page) {
+            $item->expiresAfter(3600);
+            return $postRepository->findBy([], [], 20, ($page-1)*10);
+        });
+
+        //get page number with 10 keywords per page
+        $pages = $this->cache->get('posts_page_number', function (ItemInterface $item) use ($postRepository) {
+            $item->expiresAfter(3600);
+            return $postRepository->count([]) / 10;
+        });
         return $this->render('post/index.html.twig', [
-            'posts' => $postRepository->findAll(),
+            'posts' => $posts,
+            'pages' => $pages,
         ]);
     }
 
