@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Author;
+use App\Repository\AuthorRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -24,7 +26,17 @@ class AuthorType extends AbstractType
                 'expanded' => true,
                 'multiple' => false,
             ])
-            ->add('mainAuthor')
+            ->add('mainAuthor', EntityType::class, [
+                'class' => Author::class,
+                'query_builder' => function (AuthorRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->andWhere('c.locale = en');
+                },
+                'choice_label' => 'name',
+                'placeholder' => '',
+                'required' => false,
+                'autocomplete' => true
+            ])
         ;
     }
 

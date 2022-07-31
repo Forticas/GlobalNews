@@ -1,0 +1,71 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Post index{% endblock %}
+{% if app.request.get('page') %}
+    {% set current_page = app.request.get('page') %}
+{% else %}
+    {% set current_page = 1 %}
+{% endif %}
+{% block body %}
+    <h1>Post index</h1>
+<div
+    {{ stimulus_controller('symfony/ux-swup/swup') }}
+    id="swup"
+>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Slug</th>
+                <th>Excerpt</th>
+                <th>Content</th>
+                <th>CreatedAt</th>
+                <th>PublishedAt</th>
+                <th>UpdatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for post in posts %}
+            <tr>
+                <td>{{ post.id }}</td>
+                <td>{{ post.title }}</td>
+                <td>{{ post.slug }}</td>
+                <td>{{ post.excerpt }}</td>
+                <td>{{ post.content }}</td>
+                <td>{{ post.createdAt ? post.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ post.publishedAt ? post.publishedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ post.updatedAt ? post.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
+                    <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if pages > 1 %}
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('app_post_index')~'?page='~(current_page-1) }}">Previous</a>
+                </li>
+                {% for i in 1..pages %}
+                    <li class="page-item{% if i == current_page %} active{% endif %}">
+                        <a class="page-link" href="{{ path('app_post_index')~'?page='~i }}">{{ i }}</a>
+                    </li>
+                {% endfor %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ path('app_post_index')~'?page='~(current_page+1) }}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+    <a href="{{ path('app_post_new') }}">Create new</a>
+{% endblock %}

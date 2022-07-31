@@ -24,7 +24,11 @@ class KeywordType extends AbstractType
                 'expanded' => true,
                 'multiple' => false,
             ])
-            ->add('mainKeyword')
+            ->add('mainKeyword', KeywordAutocompleteField::class, [
+                'required' => true,
+                'multiple' => false,
+
+            ])
         ;
     }
 

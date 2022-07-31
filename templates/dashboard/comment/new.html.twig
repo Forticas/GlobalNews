@@ -1,0 +1,11 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}New Comment{% endblock %}
+
+{% block body %}
+    <h1>Create new Comment</h1>
+
+    {{ include('dashboard/comment/_form.html.twig') }}
+
+    <a href="{{ path('app_comment_index') }}">back to list</a>
+{% endblock %}

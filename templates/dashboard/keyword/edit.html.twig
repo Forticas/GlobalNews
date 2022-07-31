@@ -1,0 +1,13 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Edit Keyword{% endblock %}
+
+{% block body %}
+    <h1>Edit Keyword</h1>
+
+    {{ include('dashboard/keyword/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_keyword_index') }}">back to list</a>
+
+    {{ include('dashboard/keyword/_delete_form.html.twig') }}
+{% endblock %}
