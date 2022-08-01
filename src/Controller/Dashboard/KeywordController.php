@@ -21,14 +21,12 @@ class KeywordController extends AbstractController
     {
     }
 
-    /**
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
+
     #[Route('/', name: 'app_keyword_index', methods: ['GET'])]
     public function index(KeywordRepository $keywordRepository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
-        $keywords = $this->cache->get('keywords-'.$page, function (ItemInterface $item) use ($keywordRepository, $page) {
+        $keywords = $this->cache->get('keywords_'.$page, function (ItemInterface $item) use ($keywordRepository, $page) {
             $item->expiresAfter(3600);
             return $keywordRepository->findBy([], [], 10, ($page-1)*10);
         });
