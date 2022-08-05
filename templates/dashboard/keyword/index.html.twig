@@ -11,7 +11,13 @@
     <h1>Keyword index</h1>
 
     <div
-        {{ stimulus_controller('symfony/ux-swup/swup') }}
+        {{ stimulus_controller('symfony/ux-swup/swup', {
+            containers: ['#swup'],
+            animateHistoryBrowsing: true,
+            cache: true,
+            linkSelector: '.page-link',
+            theme: 'slide'
+        }) }}
         id="swup"
     >
         <table class="table">
