@@ -54,6 +54,7 @@ services:
       MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
     restart: unless-stopped
     volumes:
+      - ./docker/caddy/Caddyfile:/etc/caddy/Caddyfile
       - php_socket:/var/run/php
       - caddy_data:/data
       - caddy_config:/config

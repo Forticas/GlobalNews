@@ -23,12 +23,22 @@
                 <th>Description</th>
                 <td>{{ category.description }}</td>
             </tr>
+            <tr>
+                <th>Locale</th>
+                <td>{{ category.locale }}</td>
+            </tr>
         </tbody>
     </table>
+    {% for post in category.posts %}
 
-    <a href="{{ path('app_category_index') }}">back to list</a>
+        <ul>
+            <li>{{ post.slug }}</li>
+            <li>{{ post.locale }}</li>
+        </ul>
+    {% endfor %}
+    <a href="{{ path('dashboard_category_index') }}">back to list</a>
 
-    <a href="{{ path('app_category_edit', {'id': category.id}) }}">edit</a>
+    <a href="{{ path('dashboard_category_edit', {'id': category.id}) }}">edit</a>
 
     {{ include('dashboard/category/_delete_form.html.twig') }}
 {% endblock %}

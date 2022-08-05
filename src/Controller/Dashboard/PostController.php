@@ -20,7 +20,7 @@ class PostController extends AbstractController
     )
     {
     }
-    #[Route('/', name: 'app_post_index', methods: ['GET'])]
+    #[Route('/', name: 'dashboard_post_index', methods: ['GET'])]
     public function index(PostRepository $postRepository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
@@ -40,7 +40,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_post_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'dashboard_post_new', methods: ['GET', 'POST'])]
     public function new(Request $request, PostRepository $postRepository): Response
     {
         $post = new Post();
@@ -50,7 +50,7 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             $postRepository->add($post, true);
-            return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard_post_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('dashboard/post/new.html.twig', [
@@ -59,7 +59,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_post_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'dashboard_post_show', methods: ['GET'])]
     public function show(Post $post): Response
     {
         return $this->render('dashboard/post/show.html.twig', [
@@ -67,7 +67,7 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_post_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'dashboard_post_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Post $post, PostRepository $postRepository): Response
     {
         $form = $this->createForm(PostType::class, $post);
@@ -76,7 +76,7 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $postRepository->add($post, true);
 
-            return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard_post_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('dashboard/post/edit.html.twig', [
@@ -85,13 +85,13 @@ class PostController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_post_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'dashboard_post_delete', methods: ['POST'])]
     public function delete(Request $request, Post $post, PostRepository $postRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$post->getId(), $request->request->get('_token'))) {
             $postRepository->remove($post, true);
         }
 
-        return $this->redirectToRoute('app_post_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('dashboard_post_index', [], Response::HTTP_SEE_OTHER);
     }
 }

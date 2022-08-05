@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/dashboard/author')]
 class AuthorController extends AbstractController
 {
-    #[Route('/', name: 'app_author_index', methods: ['GET'])]
+    #[Route('/', name: 'dashboard_author_index', methods: ['GET'])]
     public function index(AuthorRepository $authorRepository): Response
     {
         return $this->render('dashboard/author/index.html.twig', [
@@ -21,7 +21,7 @@ class AuthorController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_author_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'dashboard_author_new', methods: ['GET', 'POST'])]
     public function new(Request $request, AuthorRepository $authorRepository): Response
     {
         $author = new Author();
@@ -31,7 +31,7 @@ class AuthorController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $authorRepository->add($author, true);
 
-            return $this->redirectToRoute('app_author_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard_author_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('dashboard/author/new.html.twig', [
@@ -40,7 +40,7 @@ class AuthorController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_author_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'dashboard_author_show', methods: ['GET'])]
     public function show(Author $author): Response
     {
         return $this->render('dashboard/author/show.html.twig', [
@@ -48,7 +48,7 @@ class AuthorController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_author_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'dashboard_author_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Author $author, AuthorRepository $authorRepository): Response
     {
         $form = $this->createForm(AuthorType::class, $author);
@@ -57,7 +57,7 @@ class AuthorController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $authorRepository->add($author, true);
 
-            return $this->redirectToRoute('app_author_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard_author_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('dashboard/author/edit.html.twig', [
@@ -66,13 +66,13 @@ class AuthorController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_author_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'dashboard_author_delete', methods: ['POST'])]
     public function delete(Request $request, Author $author, AuthorRepository $authorRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$author->getId(), $request->request->get('_token'))) {
             $authorRepository->remove($author, true);
         }
 
-        return $this->redirectToRoute('app_author_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('dashboard_author_index', [], Response::HTTP_SEE_OTHER);
     }
 }

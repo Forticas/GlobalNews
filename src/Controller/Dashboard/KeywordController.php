@@ -22,7 +22,7 @@ class KeywordController extends AbstractController
     }
 
 
-    #[Route('/', name: 'app_keyword_index', methods: ['GET'])]
+    #[Route('/', name: 'dashboard_keyword_index', methods: ['GET'])]
     public function index(KeywordRepository $keywordRepository, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
@@ -42,7 +42,7 @@ class KeywordController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_keyword_new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'dashboard_keyword_new', methods: ['GET', 'POST'])]
     public function new(Request $request, KeywordRepository $keywordRepository): Response
     {
         $keyword = new Keyword();
@@ -52,7 +52,7 @@ class KeywordController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $keywordRepository->add($keyword, true);
 
-            return $this->redirectToRoute('app_keyword_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard_keyword_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('dashboard/keyword/new.html.twig', [
@@ -61,7 +61,7 @@ class KeywordController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_keyword_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'dashboard_keyword_show', methods: ['GET'])]
     public function show(Keyword $keyword): Response
     {
         return $this->render('dashboard/keyword/show.html.twig', [
@@ -69,7 +69,7 @@ class KeywordController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_keyword_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'dashboard_keyword_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Keyword $keyword, KeywordRepository $keywordRepository): Response
     {
         $form = $this->createForm(KeywordType::class, $keyword);
@@ -78,7 +78,7 @@ class KeywordController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $keywordRepository->add($keyword, true);
 
-            return $this->redirectToRoute('app_keyword_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('dashboard_keyword_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('dashboard/keyword/edit.html.twig', [
@@ -87,13 +87,13 @@ class KeywordController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_keyword_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'dashboard_keyword_delete', methods: ['POST'])]
     public function delete(Request $request, Keyword $keyword, KeywordRepository $keywordRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$keyword->getId(), $request->request->get('_token'))) {
             $keywordRepository->remove($keyword, true);
         }
 
-        return $this->redirectToRoute('app_keyword_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('dashboard_keyword_index', [], Response::HTTP_SEE_OTHER);
     }
 }

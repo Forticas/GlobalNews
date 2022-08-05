@@ -7,14 +7,17 @@
             experimental_http3
         }
     }
+
 }
 
 {$SERVER_NAME}
 
 log
 
+
 route {
     root * /srv/app/public
+
     mercure {
         # Transport to use (default to Bolt)
         transport_url {$MERCURE_TRANSPORT_URL:bolt:///data/mercure.db}
