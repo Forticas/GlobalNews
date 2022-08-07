@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class PostType extends AbstractType
 {
@@ -28,6 +29,11 @@ class PostType extends AbstractType
             ])
             ->add('mainPost')
             ->add('title')
+            ->add('imageFile', VichImageType::class, [
+                'required' => false,
+                'allow_delete' => true,
+                'asset_helper' => true,
+            ])
             ->add('excerpt')
             ->add('content')
             ->add('author', EntityType::class, [
